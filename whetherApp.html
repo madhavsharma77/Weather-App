@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather Info</title>
+</head>
+<body>
+  <h2>Enter State or City</h2>
+  <input type="text" id="stateInput" placeholder="e.g., New York">
+  <button onclick="getWeather()">Submit</button>
+
+  <h3>Weather Details:</h3>
+  <div id="weatherDisplay" style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;"></div>
+
+  <script>
+    function getWeather() {
+      const state = document.getElementById('stateInput').value.trim();
+      if (!state) {
+        alert("Please enter a state or city name.");
+        return;
+      }
+
+      fetch(`http://api.weatherstack.com/current?access_key=1133647fbaac0e7d7a12055dc4d3da5d&query=${encodeURIComponent(state)}`)
+        .then(response => {
+          if (!response.ok) throw new Error("API request failed.");
+          return response.json();
+        })
+        .then(data => {
+          console.log(data);
+          const location = data.location.name + ' ' + data.location.country;
+          const temperature = data.current.temperature;
+          const lat = data.location.lat;
+          const lon = data.location.lon;
+          const timezone = data.location.timezone_id;
+          const sunrise123 = data.current.astro.sunrise;
+          const wind = data.current.wind_speed;
+
+          document.getElementById('weatherDisplay').innerHTML = `
+            <p><strong>Location Name:</strong> ${location}</p>
+            <p><strong>Temperature:</strong> ${temperature}°C</p>
+            <p><strong>Latitude:</strong> ${lat}</p>
+            <p><strong>Longitude:</strong> ${lon}</p>
+            <p><strong>Timezone:</strong> ${timezone}</p>
+            <p><strong>Sunrise:</strong> ${sunrise123}</p>
+            <p><strong>wind:</strong> ${wind}</p>
+
+
+            `;
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          document.getElementById('weatherDisplay').innerHTML = "Failed to fetch weather data.";
+        });
+    }
+  </script>
+</body>
+</html>
